@@ -20,7 +20,7 @@ Antes de ejecutar la aplicación, asegúrate de configurar las siguientes variab
 ```bash
 # Archivo .env
 
-# Configuración de la aplicación
+
 DJANGO_SECRET_KEY=changeme
 DJANGO_ALLOWED_HOSTS=127.0.0.0
 JWT_PASSWORD=changeme
@@ -29,14 +29,16 @@ JWT_PASSWORD=changeme
 DB_NAME=dbname
 DB_USER=rootuser
 DB_PASS=changeme
-...
+
+```
+
 ## Ejecución en Desarrollo
 
 Para ejecutar la aplicación en un entorno de desarrollo, utiliza el siguiente comando en tu terminal:
 
 ```bash
 docker-compose up -d
-
+```
 
 ## Despliegue
 
@@ -48,3 +50,4 @@ Para desplegar la aplicación en un entorno de producción, sigue estos pasos:
 
 ```bash
 docker-compose -f docker-compose-deploy.yml up -d
+```
