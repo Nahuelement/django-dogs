@@ -7,126 +7,142 @@ from drf_spectacular.utils import (
     OpenApiParameter,
     OpenApiTypes,
 )
-from rest_framework import viewsets, mixins, status
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
-from rest_framework.response import Response
 
-# Create your views here.
-from core.models import Recipe, Tag, Ingredient
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework_simplejwt.authentication import JWTAuthentication
+from rest_framework import viewsets
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.generics import CreateAPIView
+from rest_framework.pagination import PageNumberPagination
+
+
+from core.models import Breed, Dog, Answer
 from recipe import serializers
+
+
+
+class CustomPageNumberPagination(PageNumberPagination):
+    page_size = 10
+    page_size_query_param = 'limit'
+    max_page_size = 100
+
 
 @extend_schema_view(
     list=extend_schema(
         parameters=[
             OpenApiParameter(
-                'tags',
+                'name',
                 OpenApiTypes.STR,
-                description='separacion por , para diferenciar los tags ',
+        
             ),
             OpenApiParameter(
-                'ingredients',
-                OpenApiTypes.STR,
-                description='separacion por , para diferenciar los filter',
+                'offset',
+                OpenApiTypes.INT,
+                description='The initial index from which to return the result.',
+            ),
+            OpenApiParameter(
+                'limit',
+                OpenApiTypes.INT,
+                description='Number of results to return per page.',
             ),
         ]
     )
+    
 )
-class RecipeViewSet(viewsets.ModelViewSet):
+class BreedsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    serializer_class = serializers.RecipeDetailSerializer
-    queryset = Recipe.objects.all()
-    authentication_classes = [TokenAuthentication]
+    serializer_class = serializers.BreedSerializer
+    queryset = Breed.objects.all()
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-
-    def _params_to_ints(self, qs):
-
-        return [int(str_id) for str_id in qs.split(',')]
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
 
-        tags = self.request.query_params.get('tags')
-        ingredients = self.request.query_params.get('ingredients')
+        name = self.request.query_params.get('name')
+        offset = self.request.query_params.get('offset')
         queryset = self.queryset
-        if tags:
-            tag_ids = self._params_to_ints(tags)
-            queryset = queryset.filter(tags__id__in=tag_ids)
-        if ingredients:
-            ingredient_ids = self._params_to_ints(ingredients)
-            queryset = queryset.filter(ingredients__id__in=ingredient_ids)
-
+        if name:
+            queryset = queryset.filter(name=name)
+        if offset:
+            queryset = queryset.filter(id__gte=offset)
         return queryset.filter(
             user=self.request.user
         ).order_by('-id').distinct()
 
-    def get_serializer_class(self):
-
-        if self.action == 'list':
-            return serializers.RecipeSerializer
-        elif self.action == 'upload_image':
-            return serializers.RecipeImageSerializer
-
-        return self.serializer_class
+   
 
     def perform_create(self, serializer):
 
         serializer.save(user=self.request.user)
 
-    @action(methods=['POST'], detail=True, url_path='upload-image')
-    def upload_image(self, request, pk=None):
-
-        recipe = self.get_object()
-        serializer = self.get_serializer(recipe, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    
 @extend_schema_view(
     list=extend_schema(
         parameters=[
             OpenApiParameter(
-                'assigned_only',
-                OpenApiTypes.INT, enum=[0, 1],
-                description='filtro por item asignado a recipe.',
+                'name',
+                OpenApiTypes.STR,
+        
+            ),
+            OpenApiParameter(
+                'breed',
+                OpenApiTypes.STR,
+        
+            ),
+            OpenApiParameter(
+                'breed__name',
+                OpenApiTypes.STR,
+        
+            ),
+            OpenApiParameter(
+                'page',
+                OpenApiTypes.INT,
+                description='A page number within the paginated result set',
             ),
         ]
     )
+    
 )
-class BaseRecipeAttrViewSet(mixins.DestroyModelMixin,
-                            mixins.UpdateModelMixin,
-                            mixins.ListModelMixin,
-                            viewsets.GenericViewSet):
+class DogsViewSet(viewsets.ReadOnlyModelViewSet):
 
-    authentication_classes = [TokenAuthentication]
+    serializer_class = serializers.DogSerializer
+    queryset = Dog.objects.all()
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
+    pagination_class = CustomPageNumberPagination
 
     def get_queryset(self):
 
-        assigned_only = bool(
-            int(self.request.query_params.get('assigned_only', 0))
-        )
+        name = self.request.query_params.get('name')
+        breed = self.request.query_params.get('breed')
+        breed__name = self.request.query_params.get('breed__name')
         queryset = self.queryset
-        if assigned_only:
-            queryset = queryset.filter(recipe__isnull=False)
+        if name:
+            queryset = queryset.filter(name=name)
+        if breed:
+            queryset = queryset.filter(breed__name=breed)
+        elif breed__name:
+            queryset = queryset.filter(breed__name=breed__name)
 
         return queryset.filter(
             user=self.request.user
-        ).order_by('-name').distinct()
-
-class TagViewSet(BaseRecipeAttrViewSet):
-
-    serializer_class = serializers.TagSerializer
-    queryset = Tag.objects.all()
+        ).order_by('-id').distinct()
 
 
+    def perform_create(self, serializer):
 
-class IngredientViewSet(BaseRecipeAttrViewSet):
-  
-    serializer_class = serializers.IngredientSerializer
-    queryset = Ingredient.objects.all()
+        serializer.save(user=self.request.user)
+      
+      
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+class AnswerView(CreateAPIView):
+    
+    serializer_class = serializers.AnswerSerializer
+    queryset = Answer.objects.all()
 
+    def perform_create(self, serializer):
+        # Puedes realizar acciones adicionales antes de guardar la instancia
+        serializer.save()
 

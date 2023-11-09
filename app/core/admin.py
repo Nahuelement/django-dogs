@@ -11,7 +11,7 @@ from core import models
 
 
 class UserAdmin(BaseUserAdmin):
-    """Definir la pagina de usuario en el administrador."""
+    ##Definir pagina de usuario en el administrador.
     ordering = ['id']
     list_display = ['email', 'name', 'is_active']
     fieldsets = (
@@ -49,7 +49,7 @@ class UserAdmin(BaseUserAdmin):
 
 
 admin.site.register(models.User, UserAdmin)
-admin.site.register(models.Recipe)
-admin.site.register(models.Tag)
-admin.site.register(models.Ingredient)
+admin.site.register(models.Breed)
+admin.site.register(models.Dog)
+admin.site.register(models.Answer)
 

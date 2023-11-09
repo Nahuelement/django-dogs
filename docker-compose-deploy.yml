@@ -12,6 +12,7 @@ services:
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
       - DB_PASS=${DB_PASS}
+      - JWT_PASSWORD=${JWT_PASSWORD}
       - SECRET_KEY=${DJANGO_SECRET_KEY}
       - ALLOWED_HOSTS=${DJANGO_ALLOWED_HOSTS}
     depends_on:
@@ -37,20 +38,9 @@ services:
       - 80:8000
     volumes:
       - static-data:/vol/static
-      
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    restart: always
-    tty: true
-    stdin_open: true
-    hostname: rabbithost
-    volumes:
-      - rabbitmq:/var/lib/rabbitmq
-    ports:
-      - "15672:15672"
-      - "5672:5672"
+
 
 volumes:
   postgres-data:
   static-data:
-  rabbitmq:
+

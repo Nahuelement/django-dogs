@@ -8,10 +8,10 @@ from django.test import Client
 
 
 class AdminSiteTests(TestCase):
-    """ Django admin."""
+   
 
     def setUp(self):
-        """Crear usuario o cliente."""
+        ##Crear usuario o cliente.
         self.client = Client()
         self.admin_user = get_user_model().objects.create_superuser(
             email='admin@example.com',
@@ -25,7 +25,7 @@ class AdminSiteTests(TestCase):
         )
 
     def test_users_lists(self):
-        """Test pagina de lista usuario"""
+        ##Test pagina de lista usuario
         url = reverse('admin:core_user_changelist')
         res = self.client.get(url)
 
@@ -34,7 +34,7 @@ class AdminSiteTests(TestCase):
         self.assertContains(res, self.user.email)
 
     def test_edit_user_page(self):
-        """Test editar pagina de usuario."""
+        ##Test editar pagina de usuario.
         url = reverse('admin:core_user_change', args=[self.user.id])
         res = self.client.get(url)
 
@@ -43,7 +43,7 @@ class AdminSiteTests(TestCase):
 
 
     def test_create_user_page(self):
-        """Test crea pagina de trabajo de usuario."""
+        ##Test crea pagina de trabajo de usuario.
         url = reverse('admin:core_user_add')
         res = self.client.get(url)
 
