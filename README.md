@@ -18,9 +18,9 @@ Asegúrate de tener instalados los siguientes requisitos antes de ejecutar la ap
 Antes de ejecutar la aplicación, asegúrate de configurar las siguientes variables de entorno en un archivo `.env` en la raíz del proyecto:
 
 ```bash
+
 # Archivo .env
-
-
+# Configuración api
 DJANGO_SECRET_KEY=changeme
 DJANGO_ALLOWED_HOSTS=127.0.0.0
 JWT_PASSWORD=changeme
@@ -37,7 +37,9 @@ DB_PASS=changeme
 Para ejecutar la aplicación en un entorno de desarrollo, utiliza el siguiente comando en tu terminal:
 
 ```bash
+
 docker-compose up -d
+
 ```
 
 ## Despliegue
@@ -49,5 +51,7 @@ Para desplegar la aplicación en un entorno de producción, sigue estos pasos:
 2. Ejecuta el siguiente comando en tu terminal:
 
 ```bash
+
 docker-compose -f docker-compose-deploy.yml up -d
+
 ```
