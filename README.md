@@ -20,6 +20,7 @@ Antes de ejecutar la aplicación, asegúrate de configurar las siguientes variab
 ```bash
 
 # Archivo .env
+
 # Configuración api
 DJANGO_SECRET_KEY=changeme
 DJANGO_ALLOWED_HOSTS=127.0.0.0
