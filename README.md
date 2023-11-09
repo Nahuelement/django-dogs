@@ -24,25 +24,38 @@ Antes de ejecutar la aplicación, asegúrate de configurar las siguientes variab
 DJANGO_SECRET_KEY=changeme
 DJANGO_ALLOWED_HOSTS=127.0.0.0
 JWT_PASSWORD=changeme
-...
+
 
 # Configuración de la base de datos
 DB_NAME=dbname
 DB_USER=rootuser
 DB_PASS=changeme
+...
+
+
+
+
 
 ## Ejecución en Desarrollo
-# Para ejecutar la aplicación en un entorno de desarrollo, simplemente utiliza el siguiente comando:
 
+Para ejecutar la aplicación en un entorno de desarrollo, simplemente utiliza el siguiente comando:
+
+```bash
 docker-compose up -d
+...
 
+## Despliegue
 
-## Ejecución en Desarrollo
-# Para desplegar la aplicación en un entorno de producción, utiliza el siguiente comando:
+Para desplegar la aplicación en un entorno de producción, sigue estos pasos:
 
+1. Asegúrate de tener el archivo `docker-compose-deploy.yml` en la raíz del proyecto.
+
+2. Ejecuta el siguiente comando en tu terminal:
+
+```bash
 docker-compose -f docker-compose-deploy.yml up -d
+...
 
-# Esto iniciará la aplicación en un entorno de producción con todas las configuraciones optimizadas.
 
 
 
